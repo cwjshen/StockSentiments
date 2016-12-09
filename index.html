@@ -122,6 +122,44 @@ Filtered (yes POS, yes stemming)
 </h3>
 
 
+<p><b>Adaboosting</b></p>
+<p>We attempted AdaBoosting with Decision Stumps as our weak classifiers for the simple reason that subsequent weak learners can be weighed as a result of misclassification of a previous classifier thus potentially leading to a strong classifier. We rationalized its usage based on it's resistance against overfitting which can easily happen as our original dataset consist Although AdaBoosting can be sensitive to overfitting, we imagined by filtering article headlines down to only their nouns and their adjectives we would be able to reduce the noise in our data.</p>
+
+<p>After parameterizing the number of estimators for our AdaBoost classifier that yielded us the highest accuracy score, we created another AdaBoost Classifier with the same parameters and created random training/testing sets to observe the distributions of True Positive and True Negative Scores to see if there was some sort of consistency in our scores.</p>
+
+<center> <img src="img/AdaBoost_cv.png" align="middle" style="width:500px"> </center>
+<br>
+<center> <img src="img/adaboost_score_histogram.png" align="middle"> </center>
+
+<p>Looking at the distribution of scores makes it apparent that the AdaBoost doesn't seem to be reliable because it fails to be consistent with its scores. This is probably due to the fact that our dataset isn't large enough or precise enough to capture any sort of pattern relating words to stock price changes. There is too much variability in what the True Positive and True Negative scores are for our AdaBoost Classifier to have any sort of significant predictive power.</p>
+
+<p><b>Random Forest</b></p>
+<p>Reasons Why We Chose Random Forest<p>
+<p>Hypertuned: Removal of all words except nouns and adjectives <b>(POS)</b>, removal of stem words <b>(Stem)</b>, the number of occurrences a word has to have before being put into our bag of words <b>(occurrence threshold)</b>, whether no PCA dimensionality reduction is performed or with dimensionality = 2 <b>(No PCA/PCA(2)
+)</b>, along with tree number of leaves, number of trees, and depth of the trees. Overall the time complexity of hypertuning along with cross validation of our selected parameters required a substantial amount of time even with multiprocessing capabilities. Our scoring function specified that both the True Positive rate and the True Negative rate both had to be above 0.5 or else the model's score would be 0, thus yielding Random Forest Classifiers with potentially some predictive power.</p>
+<br>
+<figure>
+  <figcaption><center>Threshold for classification 1 > 0.5% increase</center></figcaption>
+  <center> <img src="img/hypertuning_threshold_gt_005.png" align="middle"> </center>
+</figure>
+<br>
+
+<p>We chose the last model from our table since it has the most number of trees thus provides robustness against overfitting, and has consistent scores over 0.5 that are relatively close to each other. The model parameters we chose seem to give the scores on the higher end of the spectrum relative to our other models. </p>
+
+<br>
+<figure>
+  <figcaption><center>n_tree = 170, depth = 7, max_leaf_node = 9</center></figcaption>
+  <center> <img src="img/best_rf_gt_hist.png" align="middle"> </center>
+</figure>
+<br>
+
+<p>Because our threshold for a news article to be classified to be a <b>1</b>, this caused an imbalance in our dataset since intuitively setting a high threshold would mean less observations that will be classified as <i>positive</i>. Thus we also set the threshold in the opposite direction where an observation would be classified as <i>negative</i> only if the observation associated stock price has a price difference from the previous day of 0.5%</p>
+<br>
+<figure>
+  <figcaption><center>Threshold for classification 0 < 0.5% decrease</center></figcaption>
+  <center> <img src="img/hypertuning_threshold_lt_005.png" align="middle"> </center>
+</figure>
+<br>
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/cwjshen/StockSentiments">Stocksentiments</a> is maintained by <a href="https://github.com/cwjshen">cwjshen</a>.</span>
 
