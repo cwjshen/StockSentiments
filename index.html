@@ -47,7 +47,8 @@
       <a href="https://cwjshen.github.io/StockSentiments/#overview" class="btn">Overview</a>
       <a href="https://cwjshen.github.io/StockSentiments/#objectives" class="btn">Objectives</a>
       <a href="https://cwjshen.github.io/StockSentiments/#methods" class="btn">Methods</a>
-      <a href="https://cwjshen.github.io/StockSentiments/#analysis" class="btn">Analysis</a>
+      <a href="https://cwjshen.github.io/StockSentiments/#analysis" class="btn">Analysis & Modeling</a>
+      <a href="https://cwjshen.github.io/StockSentiments/#challenges" class="btn">Challenges</a>
       <a href="https://cwjshen.github.io/StockSentiments/#future" class="btn">Conclusion and Future Work</a>
 
     </section>
@@ -58,6 +59,8 @@
 
 <p>The purpose of this project is to explore how a published article about a particular company can affect that company's stocks. For this project specifically, we explore how the release of a New York Times article
 impacts, if at all, Apple stock prices.</p>
+
+
 
 <center> <img src="img/nyt.gif" alt="The New York Times" style="width:128px;height:128px;" align="middle"> 
 <img src="img/appl.png" alt="Apple" style="width:128px;height:128px;" align="middle"> </center>
@@ -113,14 +116,8 @@ Filtered (yes POS, yes stemming)
 <p>However, for our purposes, we only used the closing prices of each day to determine whether or not a stock had gone up or down following the release of an article.</p>
 
 <h3>
-  <a id="analysis" class="anchor" href="analysis" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Analysis
+  <a id="analysis" class="anchor" href="analysis" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Analysis and Modeling
 </h3>
-
-<p>We can interpret our model as a decision maker for buying and selling stocks. In the end, we should ideally expect that these series of decisions will net us some profit greater than some naive method like flipping a coin.</p>
-<h3>
-  <a id="future" class="anchor" href="future" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Conclusion and Future Work
-</h3>
-
 
 <p><b>Adaboosting</b></p>
 <p>We attempted AdaBoosting with Decision Stumps as our weak classifiers for the simple reason that subsequent weak learners can be weighed as a result of misclassification of a previous classifier thus potentially leading to a strong classifier. We rationalized its usage based on it's resistance against overfitting which can easily happen as our original dataset consist Although AdaBoosting can be sensitive to overfitting, we imagined by filtering article headlines down to only their nouns and their adjectives we would be able to reduce the noise in our data.</p>
@@ -155,11 +152,48 @@ Filtered (yes POS, yes stemming)
 
 <p>Because our threshold for a news article to be classified to be a <b>1</b>, this caused an imbalance in our dataset since intuitively setting a high threshold would mean less observations that will be classified as <i>positive</i>. Thus we also set the threshold in the opposite direction where an observation would be classified as <i>negative</i> only if the observation associated stock price has a price difference from the previous day of 0.5%</p>
 <br>
+
 <figure>
   <figcaption><center>Threshold for classification 0 < 0.5% decrease</center></figcaption>
   <center> <img src="img/hypertuning_threshold_lt_005.png" align="middle"> </center>
 </figure>
 <br>
+
+
+<p><b>Application - Stock Trading</b></p>
+<p>We can interpret our model as a decision maker for buying and selling stocks. In the end, we should ideally expect that these series of decisions will net us some profit greater than some naive method like flipping a coin.</p>
+
+<p>We created a function that would simulate our decisions to buy and sell stocks based on the predictions of our trained model. We outline the function as the following: </p> 
+
+<ul>
+  <li> We assume to start that we start off with some existing shares of the stock so that we are able to sell without buying additional shares </li>
+  <li> If the model predicts an increase in stock price, we will preemptively purchase some number of shares of the stock. </li>
+  <li> If the model predicts a decrease in stock price, we will preemptively sell the same number of shares of this stock. </li>
+  <li> At the end of each day, we see how much profit or loss occurred as a result of our decision</li>
+  <li> We average these profits/losses per day across all ten years to get the average profit/loss that our model will produce per decision </li>
+    <ul>
+      <li> We decided to do this on a day-by-day basis rather then just taking the cumulative profits across all ten years to avoid the effects of inflation. </li>
+    </ul>
+</ul>
+
+<p> We then compare the results of our model to the results of the following baseline decision makers:</p>
+<ul>
+  <li> A random coinflip - i.e. You flip a coin, if heads you buy, if tails you sell for that day.</li>
+  <li> Positive baseline - i.e. If an article is released, you always buy</li>
+  <li> Negative baseline - i.e. If an article is released, you always sell</li>
+  <li> A fortune teller - i.e. We know exactly how the stock will behave as a result of the article and we buy/sell perfectly.   </li>
+</ul>
+
+<h3>
+  <a id="challenges" class="anchor" href="challenges" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Challenges
+</h3>
+
+<h3>
+  <a id="future" class="anchor" href="future" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Conclusion and Future Work
+</h3>
+
+
+
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/cwjshen/StockSentiments">Stocksentiments</a> is maintained by <a href="https://github.com/cwjshen">cwjshen</a>.</span>
 
