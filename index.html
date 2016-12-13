@@ -164,6 +164,8 @@ Filtered (yes POS, yes stemming)
 
 
 <p><b>Application - Stock Trading</b></p>
+
+<p><b>[TODO: There's some overlap between what's written here and what's written in the analysis. Reconcile?]</b></p>
 <p>We can interpret our model as a decision maker for buying and selling stocks. In the end, we should ideally expect that these series of decisions will net us some profit greater than some naive method like flipping a coin.</p>
 
 <p>We created a function that would simulate our decisions to buy and sell stocks based on the predictions of our trained model. We outline the function as the following: </p> 
@@ -190,6 +192,10 @@ Filtered (yes POS, yes stemming)
 <h3>
   <a id="challenges" class="anchor" href="challenges" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Challenges
 </h3>
+
+<p>We ran into some issues with our initial data collection when we realized we were missing a lot of data when we used the <a href="https://developer.nytimes.com/timeswire_v3.json">Times Newswire </a> part of NYT's API. We wanted to use this API because it conveniently provided a lot of useful metadata such as abstract and title. But there seemed to be many articles missing when we tried pulling from the past decade. Times Newswire seemed to only provide all the articles from the most recent year and only a select few from the past years. We instead had to use the <a href="https://developer.nytimes.com/archive_api.json"> Archive API</a>, which gave us all the articles, but we had to do a little extra gruntwork to get the metadata.</p>
+
+<p><b>[TODO: ADD CHALLENGES REGARDING MODELING]</p>
 
 <h3>
   <a id="future" class="anchor" href="future" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Conclusion and Future Work
