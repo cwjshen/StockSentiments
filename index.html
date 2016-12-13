@@ -131,36 +131,41 @@ Filtered (yes POS, yes stemming)
 <p>Looking at the distribution of scores makes it apparent that the AdaBoost doesn't seem to be reliable because it fails to be consistent with its scores. This is probably due to the fact that our dataset isn't large enough or precise enough to capture any sort of pattern relating words to stock price changes. There is too much variability in what the True Positive and True Negative scores are for our AdaBoost Classifier to have any sort of significant predictive power.</p>
 
 <p><b>Random Forest</b></p>
-<p>Reasons Why We Chose Random Forest<p>
+<p>[TODO (Angela): write about why we chose random forest]<p>
 <p>Hypertuned: Removal of all words except nouns and adjectives <b>(POS)</b>, removal of stem words <b>(Stem)</b>, the number of occurrences a word has to have before being put into our bag of words <b>(occurrence threshold)</b>, whether no PCA dimensionality reduction is performed or with dimensionality = 2 <b>(No PCA/PCA(2)
 )</b>, along with tree number of leaves, number of trees, and depth of the trees. Overall the time complexity of hypertuning along with cross validation of our selected parameters required a substantial amount of time even with multiprocessing capabilities. Our scoring function specified that both the True Positive rate and the True Negative rate both had to be above 0.5 or else the model's score would be 0, thus yielding Random Forest Classifiers with potentially some predictive power.</p>
 <br>
 <figure>
-  <figcaption><center>Threshold for classification 1 > 0.5% increase</center></figcaption>
+  <figcaption><center>Threshold for classification 1: > 0.5% increase</center></figcaption>
   <center> <img src="img/hypertuning_threshold_gt_005.png" align="middle"> </center>
 </figure>
 <br>
-
-<p>We chose the last model from our table since it has the most number of trees thus provides robustness against overfitting, and has consistent scores over 0.5 that are relatively close to each other. The model parameters we chose seem to give the scores on the higher end of the spectrum relative to our other models. </p>
-
-<br>
 <figure>
-  <figcaption><center>n_tree = 170, depth = 7, max_leaf_node = 9</center></figcaption>
-  <center> <img src="img/best_rf_gt_hist.png" align="middle"> </center>
-</figure>
-<br>
-
-<p>Because our threshold for a news article to be classified to be a <b>1</b>, this caused an imbalance in our dataset since intuitively setting a high threshold would mean less observations that will be classified as <i>positive</i>. Thus we also set the threshold in the opposite direction where an observation would be classified as <i>negative</i> only if the observation associated stock price has a price difference from the previous day of 0.5%</p>
-<br>
-
-<figure>
-  <figcaption><center>Threshold for classification 0 < 0.5% decrease</center></figcaption>
+  <figcaption><center>Threshold for classification 0: < 0.5% decrease</center></figcaption>
   <center> <img src="img/hypertuning_threshold_lt_005.png" align="middle"> </center>
 </figure>
 <br>
+<p>Because we set a threshold for a news article to be classified to be a <b>1</b>, this caused an imbalance in our dataset since intuitively setting a high threshold would mean less observations that will be classified as <i>positive</i>. Thus we also set the threshold in the opposite direction where an observation would be classified as <i>negative</i> only if the observation associated stock price has a price difference from the previous day of 0.5%</p>
+
+<p>In order to test which model would do the best we simulated (50 times per model) how our model would do against several baseline models: always sell, always buy, 50/50, and a fortune teller. [TODO (Angela): Write more if u want to here]. Each model has an "average profit" which denotes the amount of money you would make each day if you followed the model with 1 stock for 10 years.</p>
+
+<figure>
+  <center><img src="img/gt_scores.png" align="middle"><img src="img/lt_scores.png" align="middle"></center>
+</figure>
+
+<p>We can see from the scores that models 19 and 30 did the best. However we can see that Model 30 does, on average, better than Model 19. Below we compare and show the relative performance of the baseline models where the blue line is the model average profit, red is the always buy baseline model average profit, and black is the 50/50 random baseline model. </p>
+
+<figure>
+  <center> <img src="img/model_19_hist.png" align="middle" style="width:375px" ><img src="img/model_30_hist.png" align="middle" style="width:375px"></center>
+</figure>
+<br>
+
+<p>Both models do well in terms of the baseline models on average, thus we can say with some confidence that our models do better than baseline models, however it seems like Model 30 does slightly better than Model 19 in terms of how often it does better than the baseline model and by how much.</p>
 
 
 <p><b>Application - Stock Trading</b></p>
+
+<p><b>[TODO: There's some overlap between what's written here and what's written in the analysis. Reconcile?]</b></p>
 <p>We can interpret our model as a decision maker for buying and selling stocks. In the end, we should ideally expect that these series of decisions will net us some profit greater than some naive method like flipping a coin.</p>
 
 <p>We created a function that would simulate our decisions to buy and sell stocks based on the predictions of our trained model. We outline the function as the following: </p> 
@@ -188,12 +193,13 @@ Filtered (yes POS, yes stemming)
   <a id="challenges" class="anchor" href="challenges" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Challenges
 </h3>
 
+<p>We ran into some issues with our initial data collection when we realized we were missing a lot of data when we used the <a href="https://developer.nytimes.com/timeswire_v3.json">Times Newswire </a> part of NYT's API. We wanted to use this API because it conveniently provided a lot of useful metadata such as abstract and title. But there seemed to be many articles missing when we tried pulling from the past decade. Times Newswire seemed to only provide all the articles from the most recent year and only a select few from the past years. We instead had to use the <a href="https://developer.nytimes.com/archive_api.json"> Archive API</a>, which gave us all the articles, but we had to do a little extra gruntwork to get the metadata.</p>
+
+<p><b>[TODO: ADD CHALLENGES REGARDING MODELING]</p>
+
 <h3>
   <a id="future" class="anchor" href="future" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Conclusion and Future Work
 </h3>
-
-
-
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/cwjshen/StockSentiments">Stocksentiments</a> is maintained by <a href="https://github.com/cwjshen">cwjshen</a>.</span>
 
