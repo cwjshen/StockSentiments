@@ -2,7 +2,7 @@
 <html lang="en-us">
   <head>
     <meta charset="UTF-8">
-    <title>StockSentiments by Alexander Lin, Angela Jiang, and Jason Shen</title>
+    <title>StockSentiments by Angela Jiang, Alexander Lin, and Jason Shen</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
@@ -57,9 +57,7 @@
       <h3>
 <a id="overview" class="anchor" href="#Project Overview" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Project Overview</h3>
 
-<p>The purpose of this project is to explore how a published article about a particular company can affect that company's stocks. For this project specifically, we explore how the release of a New York Times article
-impacts, if at all, Apple stock prices.</p>
-
+<p>The purpose of this project is to explore how a published article about a particular company can affect that company's stocks. For this project specifically, we explored whether or not we can predict the direction of change in Apple stock prices given the release of a New York Times article that contains key words related to Apple in its headline. We assessed the utility of our predictions by calculating the average daily profit expected if we bought or sold a share of the stock based on our predictons each time a relevant article was released.</p>
 
 
 <center> <img src="img/nyt.gif" alt="The New York Times" style="width:128px;height:128px;" align="middle"> 
@@ -71,15 +69,18 @@ impacts, if at all, Apple stock prices.</p>
 <p>In particular we wanted to explore the potential answers to some of these questions:</p>
 
 <ul>
-  <li>Using past data, given the release of an article, are we able to witness a noticeable change in a company's stock prices</li>
-  <li>What should this change take look like?
+  <li>Using past data, given the release of an article, are we able to witness a noticeable change in a company's stock prices?</li>
+  <li>If so, what should this change take look like?
       <ul>
           <li>How much of a change should we consider to be significant?</li>
           <li>What sort of time frame between article release and price change should we look at? Changes within an hour? A day? A week?</li>
           <li>How do these changes look over the course of a long period of time, going back several years?</li>
       </ul>
   </li>
-  <li>Can we use this data to build a model that will predict how the release of a future article will affect future stock prices?</li>
+  <li>Can we use this data to build a model that will predict how the release of a future article will affect the stock price?</li>
+    <ul>
+          <li>Can we meaningully assess the effectiveness of our model by looking at the parameter of profit of buying and selling based on the prediction?</li>
+      </ul>
 
 </ul>
 
@@ -89,21 +90,6 @@ impacts, if at all, Apple stock prices.</p>
 
 <p><b>Data Collection</b></p>
 <p>We pulled our news articles from the <a href="https://developer.nytimes.com/">New York Times API</a>. We took all news articles over the past 10 years dating from December 2006 to December 2016 and ended up with over 650,000 articles. We chose the New York Times API specifically because it was relatively easy to use and provided all the relevant information for the scope of our project including date of release, headline, and abstract. Our project focused on using the headlines as predictors.</p>
-
-<p><b>Data Cleaning</b></p>
-
-<p>Since we wanted to focus on Apple stocks, we first filtered our data by key words related to Apple or Apple products, such as "Apple", "Mac", and "iPhone", in the headlines. We then removed all punctuation and capitalization. We experimented with using [Alex fill this part in POS] and word stemming on the filtered headlines.</p>
-
-Filtered (no POS, no stemming)
-<img src="img/filtered_df.png">
-Filtered (yes POS, no stemming)
-<img src="img/filtered_pos_df.png">
-Filtered (no POS, yes stemming)
-<img src="img/filtered_stem_df.png">
-Filtered (yes POS, yes stemming)
-<img src="img/filtered_pos_stem_df.png">
-
-<p>We tokenized the headlines into single words. </p>
 
 <p>For stock prices NASDAQ had a built-in feature on their website where we could specify a time range and download the stock price data of a company for that time period conveniently as a CSV file. The stock data contained information about:</p>
 
@@ -117,75 +103,187 @@ Filtered (yes POS, yes stemming)
 
 <img src='img/stock_prices.png'>
 
+<p><b>Data Cleaning and Dimensionality Reduction</b></p>
+
+<p>Since we wanted to focus on Apple stocks, we first filtered our data by key words related to Apple or Apple products (i.e., "Apple", "AAPL", "iPod", "MacBook", "iPhone") in the headlines. This resulted in the reduction of the dataset from over 650,000 articles down to 1430 articles. On top of this, we experimented with feature selection by filtering out all words that did not match a certain part of speech (in particular nouns and adjectives) and/or word stemming on the filtered headlines:</p>
+
+Filtered data without POS tag filtering or stemming words
+<img src="img/filtered_df.png">
+Filtered data with only POS tag filtering
+<img src="img/filtered_pos_df.png">
+Filtered data with only stemming words
+<img src="img/filtered_stem_df.png">
+Filtered data with both POS tag filtering and stemming words
+<img src="img/filtered_pos_stem_df.png">
+
+<p>We tokenized the headlines into single words to transform the headines into a bag of words; thus, each unique word is a predictor. The number of predictors were different depends on the feature set we used: 
+  <table>
+    <thead>
+      <tr>
+        <th>Feature set</th>
+        <th>Number of predictors</th> 
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>No POS tag filtering or stemming words</td>
+        <td>2960</td> 
+      </tr>
+      <tr>
+        <td>POS tag filtering only</td>
+        <td>1685</td> 
+      </tr>
+      <tr>
+        <td>Stemming words only</td>
+        <td>2392</td> 
+      </tr>
+      <tr>
+        <td>Both POS tag filtering and stemming words</td>
+        <td>1620</td> 
+      </tr>
+    </tbody>
+  </table>
+</p>
+
+<p>
+  And each of these feature sets has its own slightly different list of most frequent words:
+  <img src="img/hist-no-pos-no-stem.png">
+  <img src="img/hist-pos-only.png">
+  <img src="img/hist-stem-only.png">
+  <img src="img/hist-yes-pos-yes-stem.png">
+</p>
+
+<p> We noticed that the number of predictors is still very large (~1600 - 3000) considering the size of our data (~1400). Because of these attributes of the dataset, we were wary of overfitting the model. Thus, we also explored setting a threshold when vectorizing the headlines; that is, only words that appeared more than a certain number of times over the entire dataset will be included in the bag of words. In addition, we explored the use of principal component analysis (PCA) as an alternative way to reduce dimensionality. We experimented with the use of 2 components.</p>
+
+<p><b>Calculating the response variable</b></p>
+<p>We framed the stock price change problem as a binary classification problem: given the bag of words feature set, can we predict whether the stock will increase (1) or decrease (0)? Our points of reference revolved around the publication date of the article. The change in price was calculated using the closing price of the closest business day on or after the publication date (the "after" price) and the closing price of the closest business day before the publication date (the "before" price). Thus, the <i>price difference = after price - before price</i>.</p>
+
+<p>Initially, we did not set a threshold; that is, if the stock price increased by $0.0001 or more, it was labeled as an increase; if the stock price decreased by $0.0001 or more, it was labeled as a decrease. However, we found that we were not able to attain great fidelity with our models, and we hypothesized that this was because our data could not predict changes in stock price to that precise of a movement.</p>
+
+<p>Instead, we experimented with the implementation of a threshold: for a change in stock price to be labeled as a decrease (0), the price must have decreased by at least 0.05% of the previous day's price; otherwise, it was labeled as an increase (1). This "less than" threshold means that a decrease in stock price less than 0.05% of the previous day's price may still be labeled as an increase. The same idea applies to the formulation of the opposite "greater than" threshold; an increase in stock price less than 0.05% of the previous day's price may still be labeled as a decrease.</p>
+
+<p>
+  Examples of the difference in response variable of the two types of thresholds is below: </br></br>
+  Dataframe showing response labels for "greater than" threshold (increase >= 0.05% to count as an increase):
+  <img src="img/gt-threshold-df.png">
+  Dataframe showing response labels for "less than" threshold (decrease >= 0.05% to count as an decrease):
+  <img src="img/lt-threshold-df.png">
+</p>
+
+<p>Note that the different thresholds result in imbalanced classes:
+    <table>
+    <thead>
+      <tr>
+        <th>Threshold</th>
+        <th>Num items in Class 0</th> 
+        <th>% items in Class 0</th> 
+        <th>Num items in Class 1</th> 
+        <th>% items in Class 1</th> 
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>"Greater than" (i.e., >= 0.5% increase labeled as 1)</td>
+        <td>838</td> 
+        <td>58.6%</td>
+        <td>592</td>
+        <td>41.4%</td> 
+      </tr>
+      <tr>
+        <td>"Less than" (i.e., >= 0.5% decrease labeled as 0)</td>
+        <td>486</td> 
+        <td>34.0%</td> 
+        <td>944</td> 
+        <td>66.0%</td>
+      </tr>
+    </tbody>
+  </table>
+</p>
+
+The imbalance intuitively makes sense: setting a high threshold for an increase ("greater than" threshold) would mean that fewer observations that will be classified as an increase (1), just as setting a high threshold for a decrease ("less than" threshold) would mean that fewer observations that will be classified as a decrease (0).
+
 <h3>
   <a id="analysis" class="anchor" href="analysis" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Analysis and Modeling
 </h3>
 
-<p><b>Adaboosting</b></p>
-<p>We attempted AdaBoosting with Decision Stumps as our weak classifiers for the simple reason that subsequent weak learners can be weighed as a result of misclassification of a previous classifier thus potentially leading to a strong classifier. We rationalized its usage based on it's resistance against overfitting which can easily happen as our original dataset consist Although AdaBoosting can be sensitive to overfitting, we imagined by filtering article headlines down to only their nouns and their adjectives we would be able to reduce the noise in our data.</p>
+<p><b>AdaBoosting</b></p>
+<p>We attempted AdaBoosting with Decision Stumps as our weak classifiers for the simple reason that subsequent weak learners can be weighed as a result of misclassification of a previous classifier thus potentially leading to a strong classifier. We rationalized its usage based on its resistance against overfitting which can easily happen as our original dataset consisted of relatively few observations with a large number of predictors. Although AdaBoosting can be sensitive to overfitting, we imagined by filtering article headlines down to only their nouns and their adjectives we would be able to reduce the noise in our data.</p>
 
-<p>After parameterizing the number of estimators for our AdaBoost classifier that yielded us the highest accuracy score, we created another AdaBoost Classifier with the same parameters and created random training/testing sets to observe the distributions of True Positive and True Negative Scores to see if there was some sort of consistency in our scores.</p>
+<p>After parameterizing the number of estimators for our AdaBoost classifier that yielded us the highest accuracy scores, we created another AdaBoost Classifier with the same parameters and created random training/testing sets to observe the distributions of true positive and true negative accuracy scores to see if there was any consistency in the scores.</p>
 
 <center> <img src="img/AdaBoost_cv.png" align="middle" style="width:500px"> </center>
 <br>
 <center> <img src="img/adaboost_score_histogram.png" align="middle"> </center>
 
-<p>Looking at the distribution of scores makes it apparent that the AdaBoost doesn't seem to be reliable because it fails to be consistent with its scores. This is probably due to the fact that our dataset isn't large enough or precise enough to capture any sort of pattern relating words to stock price changes. There is too much variability in what the True Positive and True Negative scores are for our AdaBoost Classifier to have any sort of significant predictive power.</p>
+<p>Looking at the distribution of scores makes it apparent that the AdaBoost does not seem to be reliable because it fails to be consistent with its scores. This is likely due to the fact that our dataset is not large enough or precise enough to capture any sort of pattern relating words to stock price changes. There is too much variability in what the true positive and true negative accuracy scores are for our AdaBoost Classifier to have any significant predictive power.</p>
 
 <p><b>Random Forest</b></p>
-<p>[TODO (Angela): write about why we chose random forest]<p>
-<p>Hypertuned: Removal of all words except nouns and adjectives <b>(POS)</b>, removal of stem words <b>(Stem)</b>, the number of occurrences a word has to have before being put into our bag of words <b>(occurrence threshold)</b>, whether no PCA dimensionality reduction is performed or with dimensionality = 2 <b>(No PCA/PCA(2)
-)</b>, along with tree number of leaves, number of trees, and depth of the trees. Overall the time complexity of hypertuning along with cross validation of our selected parameters required a substantial amount of time even with multiprocessing capabilities. Our scoring function specified that both the True Positive rate and the True Negative rate both had to be above 0.5 or else the model's score would be 0, thus yielding Random Forest Classifiers with potentially some predictive power.</p>
+<p>We next experimented with a random forest model, an ensemble classification method that deals particularly well with high dimensionality and has methods for handling imbalanced datasets.
+<p>
+<p>We hypertuned the parameters of our random forest model: 
+  <ul>
+    <li>Removal of all words except nouns and adjectives <b>(POS)</b></li>
+    <li>Removal of stem words <b>(Stem)</b></li>
+    <li> The number of occurrences a word has to have before being put into our bag of words <b>(occurrence threshold)</b></li>
+    <li>Whether no PCA dimensionality reduction is performed or with dimensionality = 2 <b>(No PCA/PCA(2))</b></li>
+    <li>Tree number of leaves</li>
+    <li>Number of trees</li>
+    <li>Depth of the trees</li>
+  </ul>
+  Overall the time complexity of hypertuning along with cross validation of our selected parameters required a substantial amount of time even with multiprocessing capabilities. Our scoring function specified that both the true positive accuracy rate and the true negative accuracy rate both had to be above 0.5 or else the model's score would be 0, thus yielding random forest classifiers with potentially some predictive power.</p>
 <br>
 <figure>
-  <figcaption><center>Threshold for classification 1: > 0.5% increase</center></figcaption>
+  <figcaption><center>Threshold for classification 1: >= 0.5% increase</center></figcaption>
   <center> <img src="img/hypertuning_threshold_gt_005.png" align="middle"> </center>
 </figure>
 <br>
 <figure>
-  <figcaption><center>Threshold for classification 0: < 0.5% decrease</center></figcaption>
+  <figcaption><center>Threshold for classification 0: >= 0.5% decrease</center></figcaption>
   <center> <img src="img/hypertuning_threshold_lt_005.png" align="middle"> </center>
 </figure>
 <br>
-<p>Because we set a threshold for a news article to be classified to be a <b>1</b>, this caused an imbalance in our dataset since intuitively setting a high threshold would mean less observations that will be classified as <i>positive</i>. Thus we also set the threshold in the opposite direction where an observation would be classified as <i>negative</i> only if the observation associated stock price has a price difference from the previous day of 0.5%</p>
 
-<p>We can interpret our model as a decision maker for buying and selling stocks. In the end, we should ideally expect that these series of decisions will net us some profit greater than some naive method like flipping a coin.</p>
+<b>Utility Function</b>
+<p>We can interpret our model as a decision maker for buying and selling stocks. In the end, we should ideally expect that these series of decisions will net us a profit greater than that netted by a naive method like flipping a coin.</p>
 
 <p>We created a function that would simulate our decisions to buy and sell stocks based on the predictions of our trained model. We outline the function as the following: </p> 
 
 <ul>
-  <li> We assume to start that we start off with some existing shares of the stock so that we are able to sell without buying additional shares </li>
-  <li> If the model predicts an increase in stock price, we will preemptively purchase some number of shares of the stock. </li>
-  <li> If the model predicts a decrease in stock price, we will preemptively sell the same number of shares of this stock. </li>
-  <li> At the end of each day, we see how much profit or loss occurred as a result of our decision</li>
-  <li> We average these profits/losses per day across all ten years to get the average profit/loss that our model will produce per decision </li>
+  <li> We assume to start that we start off with some existing shares of the stock so that we are able to sell without buying additional shares at any point in time</li>
+  <li> For each article we encounter, we will make a transaction (buy or sell) on the closest business day on or after the publication date of the article: </li>
     <ul>
-      <li> We decided to do this on a day-by-day basis rather then just taking the cumulative profits across all ten years to avoid the effects of inflation. </li>
+      <li> If the model predicts an increase in stock price, we will preemptively purchase one share of the stock</li>
+      <li> If the model predicts a decrease in stock price, we will preemptively sell the one share of the stock</li>
     </ul>
+  <li> We average these profits/losses per day across all ten years to get the average profit/loss that our model will produce per decision</li>
 </ul>
 
 <p> We then compare the results of our model to the results of the following baseline decision makers:</p>
 <ul>
-  <li> A random coinflip - i.e. You flip a coin, if heads you buy, if tails you sell for that day.</li>
-  <li> Positive baseline - i.e. If an article is released, you always buy</li>
-  <li> Negative baseline - i.e. If an article is released, you always sell</li>
-  <li> A fortune teller - i.e. We know exactly how the stock will behave as a result of the article and we buy/sell perfectly.   </li>
+  <li> A random coin flip - You flip a coin; if heads you buy, if tails you sell</li>
+  <li> Positive baseline - You always buy</li>
+  <li> Negative baseline - You always sell</li>
+  <li> A fortune teller - We know exactly how the stock will behave as a result of the article and we buy/sell perfectly</li>
 </ul>
 
-<p>We ran this simulation (50 times per model) against these baselines and ended up with the following results: </p>
+<b>Use of Threshold in Determining Increase or Decrease in Stock Price</b>
+<p>As mentioned in the previous section, because we set a price change threshold for a news article to be classified as changing in a certain direction, there was an imbalance in classes. There is a question of whether we should use the "greater than" threshold (>= 0.5% increase for label 1) or the "less than" threshold (>= 0.5% decrease for label 0). We realized that due to the nature of stocks generally increasing over time, selling incorrectly may arguably be worse than buying incorrectly because of the profit that we miss out on. Thus, we chose to use the "less than" threshold because it would take a significant decrease (>=0.5%) for us to want to sell the stock, and we more likely incorrectly buy than incorrectly sell.</p>
+
+<b>Assessing Profit Using Utility Function for Model</b>
+<p>We ran simulations of model performance in terms of the average profit determined by the utility function. We repeated the simulations 50 times per random forest model with parameters specified in the "Random Forest" section above, and we compared the average profits against these baselines. The results are below: </p>
 
 <figure>
   <center><img src="img/gt_scores.png" align="middle"><img src="img/lt_scores.png" align="middle"></center>
 </figure>
 
-<p>We can see from the scores that models 19 and 30 did the best. However we can see that Model 30 does, on average, better than Model 19. Below we compare and show the relative performance of the baseline models where the blue line is the model average profit, red is the always buy baseline model average profit, and black is the 50/50 random baseline model. </p>
+<p>We can see from the scores that models <b>19</b> (POS tag filtering = True, word stemming = True, occurrence threshold = 1, PCA components = 2, number of trees = 130, max depth = 9, max number of tree nodes = 9) and <b>30</b> (POS tag filtering = True, word stemming = False, occurrence threshold = 1, no PCA, number of trees = 70, max depth = 7, max number of tree nodes = 4) performed the best. However, we can see that Model 30 does, on average, better than Model 19. Below we compare and show the relative performance of the baseline models where the <span style="color:blue"><b>blue</b></span> line is the <b>model average profit</b>, <span style="color:red"><b>red</b></span> is the <b>"always buy" baseline model average profit</b>, and <span style="color:black"><b>black</b></span> is the <b>50/50 random baseline model</b>.</p>
 
 <figure>
   <center> <img src="img/model_19_hist.png" align="middle" style="width:375px" ><img src="img/model_30_hist.png" align="middle" style="width:375px"></center>
 </figure>
 <br>
 
-<p>Both models do well in terms of the baseline models on average, thus we can say with some confidence that our models do better than baseline models, however it seems like Model 30 does slightly better than Model 19 in terms of how often it does better than the baseline model and by how much.</p>
+<p>Both models do well in terms of the baseline models on average; thus, we can say with some confidence that our models outperform than the baseline models. However, it appears that Model 30 does slightly better than Model 19 in terms of outperforming the baseline models more consistently and by a larger margin.</p>
 
 <h3>
   <a id="challenges" class="anchor" href="challenges" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Challenges
@@ -193,11 +291,15 @@ Filtered (yes POS, yes stemming)
 
 <p>We ran into some issues with our initial data collection when we realized we were missing a lot of data when we used the <a href="https://developer.nytimes.com/timeswire_v3.json">Times Newswire </a> part of NYT's API. We wanted to use this API because it conveniently provided a lot of useful metadata such as abstract and title. But there seemed to be many articles missing when we tried pulling from the past decade. Times Newswire seemed to only provide all the articles from the most recent year and only a select few from the past years. We instead had to use the <a href="https://developer.nytimes.com/archive_api.json"> Archive API</a>, which gave us all the articles, but we had to do a little extra gruntwork to get the metadata.</p>
 
-<p><b>[TODO: ADD CHALLENGES REGARDING MODELING]</p>
+<p>One of the biggest challenges was working with the circumstances of the dataset, as the dataset returned only around 140 articles with Apple-related headlines per year for the ten years. We experimented with many different models before finding that random forest model performed consistently and did not overfit. In addition to these models, we attempted logistic regression, and we also looked at using lasso and ridge regression where the response variable is the change in stock prices. Method-wise, we also tried to bin the articles by week, and used both classification and regression models on the resulting binned data set. We also added the response variable of the previous week as a predictor variable to introduce a simple first-order auto-regressive term. None of these methods yielded any productive results that surpassed our work with the random forest models.</p>
 
 <h3>
   <a id="future" class="anchor" href="future" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Conclusion and Future Work
 </h3>
+  We were able to use our random forest model to predict the direction of change of the price of Apple stock effectively enough to generate more profit on average per decision (~$0.18) than does the baseline models of basing the decision on flipping a coin (~$0.04) or choosing to always buy (~$0.07) or always sell (~-$0.07). In terms of looking at the accuracy only, our final model does not necessarily perform stellar in terms of classificaton accuracy (~52% in overall accuracy, true positive accuracy, and true negative accuracy). However, if we consider only accuracy and not profit, the best random forest model can predict ~54-56% in overall accuracy, true positive accuracy, and true negative accuracy. This is likely because of the general upward trend of Apple stock prices over 10 years, which makes incorrectly predicting that the price of the stock will increase when it in fact decreases--our false positive rate--more forgivable. Setting the threshold to focus on only significant (>= 0.5%) decreases also helps to capitalize on this fact.
+
+  Had we more time, we would have liked to explore how our model performs in predicting the change of the price of any stock, beyond just Apple stock. Would we see similar performance? Additionally, we would like to further explore different sources of data -- perhaps acquiring news from a tech news source if we are focusing on a tech stock will yield data that is better able to capture the impact of news on stock prices. A larger or more targeted data source will help prevent overfitting and reduce noise.
+
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/cwjshen/StockSentiments">Stocksentiments</a> is maintained by <a href="https://github.com/cwjshen">cwjshen</a>.</span>
 
