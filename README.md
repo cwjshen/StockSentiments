@@ -1,2 +1,2 @@
-# StockSentiments
-Predicting Stock Prices Using Sentiment Analysis
+# Predicting Stocks
+Predicting Change in Apple Stock Price Using News Headlines
