@@ -2,7 +2,7 @@
 <html lang="en-us">
   <head>
     <meta charset="UTF-8">
-    <title>StockSentiments by Angela Jiang, Alexander Lin, and Jason Shen</title>
+    <title>Predicting Change in Apple Stock Price Using News Headlines by Angela Jiang, Alexander Lin, and Jason Shen</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
@@ -39,11 +39,9 @@
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name">Stock Forecasting</h1>
-      <h2 class="project-tagline">Predicting Change in Apple Stock Price Using News Headlines</h2>
-      <!--<a href="https://github.com/cwjshen/StockSentiments" class="btn">View on GitHub</a>
-      <a href="https://github.com/cwjshen/StockSentiments/zipball/master" class="btn">Download .zip</a>
-      <a href="https://github.com/cwjshen/StockSentiments/tarball/master" class="btn">Download .tar.gz</a>-->
+      <h1 class="project-name">Predicting Change in Apple Stock Price Using News Headlines</h1>
+      <h2 class="project-tagline">Angela Jiang, Alexander Lin, Jason Shen</h2>
+
       <a href="https://cwjshen.github.io/StockSentiments/#overview" class="btn">Overview</a>
       <a href="https://cwjshen.github.io/StockSentiments/#objectives" class="btn">Objectives</a>
       <a href="https://cwjshen.github.io/StockSentiments/#methods" class="btn">Methods</a>
@@ -296,12 +294,14 @@ Filtered data with both POS tag filtering and stemming words
 <h3>
   <a id="future" class="anchor" href="future" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Conclusion and Future Work
 </h3>
-  <p>We were able to use our random forest model to predict the direction of change of the price of Apple stock effectively enough to generate more profit on average per decision (~$0.18) than does the baseline models of basing the decision on flipping a coin (~$0.04) or choosing to always buy (~$0.07) or always sell (~-$0.07). In terms of looking at the accuracy only, our final model does not necessarily perform stellar in terms of classificaton accuracy (~52% in overall accuracy, true positive accuracy, and true negative accuracy). However, if we consider only accuracy and not profit, the best random forest model can predict ~54-56% in overall accuracy, true positive accuracy, and true negative accuracy. This is likely because of the general upward trend of Apple stock prices over 10 years, which makes incorrectly predicting that the price of the stock will increase when it in fact decreases--our false positive rate--more forgivable. Setting the threshold to focus on only significant (>= 0.5%) decreases also helps to capitalize on this fact.
 
-  Had we more time, we would have liked to explore how our model performs in predicting the change of the price of any stock, beyond just Apple stock. Would we see similar performance? Additionally, we would like to further explore different sources of data -- perhaps acquiring news from a tech news source if we are focusing on a tech stock will yield data that is better able to capture the impact of news on stock prices. A larger or more targeted data source will help prevent overfitting and reduce noise.</p>
+  <p>We were able to use our random forest model to predict the direction of change of the price of Apple stock effectively enough to generate more profit on average per decision (~$0.18) than does the baseline models of basing the decision on flipping a coin (~$0.04) or choosing to always buy (~$0.07) or always sell (~-$0.07). In terms of looking at the accuracy only, our final model does not necessarily perform stellar in terms of classificaton accuracy (~52% in overall accuracy, true positive accuracy, and true negative accuracy). However, if we consider only accuracy and not profit, the best random forest model can predict ~54-56% in overall accuracy, true positive accuracy, and true negative accuracy. This is likely because of the general upward trend of Apple stock prices over 10 years, which makes incorrectly predicting that the price of the stock will increase when it in fact decreases--our false positive rate--more forgivable. Setting the threshold to focus on only significant (>= 0.5%) decreases also helps to capitalize on this fact.</p>
+
+  <p>Had we more time, we would have liked to explore how our model performs in predicting the change of the price of any stock, beyond just Apple stock. Would we see similar performance? Additionally, we would like to further explore different sources of data -- perhaps acquiring news from a tech news source if we are focusing on a tech stock will yield data that is better able to capture the impact of news on stock prices. A larger or more targeted data source will help prevent overfitting and reduce noise.</p>
+
 
       <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/cwjshen/StockSentiments">Stocksentiments</a> is maintained by <a href="https://github.com/cwjshen">cwjshen</a>.</span>
+        <span class="site-footer-owner">This website is maintained by <a href="https://github.com/cwjshen">cwjshen</a>.</span>
 
         <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
